@@ -2,7 +2,7 @@ const LIST_FEATURES_API_URL = "https://caniuse.com/process/query.php?search=";
 const SUPPORT_DATA_API_URL =
   "https://caniuse.com/process/get_feat_data.php?type=support-data&feat=";
 
-export default function(request, response) {
+export default function (request, response) {
   const { search } = request.query;
   if (!search) {
     response.status(400).send("Error: must supply a search query param.");
@@ -10,25 +10,25 @@ export default function(request, response) {
   }
 
   return fetch(LIST_FEATURES_API_URL + search)
-    .then(resp => resp.json())
-    .then(resp =>
+    .then((resp) => resp.json())
+    .then((resp) =>
       resp
         .split(",")
-        .filter(s => s.startsWith("mdn"))
+        .filter((s) => s.startsWith("mdn"))
         .join(",")
     )
-    .then(features => fetch(SUPPORT_DATA_API_URL + features))
-    .then(resp => resp.json())
-    .then(supportData => {
+    .then((features) => fetch(SUPPORT_DATA_API_URL + features))
+    .then((resp) => resp.json())
+    .then((supportData) => {
       const esmSupportData = Object.fromEntries(
-        Object.values(supportData).map(featureData => [
+        Object.values(supportData).map((featureData) => [
           featureData.title,
-          isFeatureEsm(featureData)
+          isFeatureEsm(featureData),
         ])
       );
       response.status(200).send(JSON.stringify(esmSupportData));
     })
-    .catch(err => {
+    .catch((err) => {
       response.status(500).send("Error: " + err.message);
     });
 }
@@ -40,14 +40,15 @@ function isFeatureEsm(supportData) {
   )) {
     const firstFeatureVersion = getFirstSupportingVersion(supportData, browser);
     if (firstFeatureVersion > firstEsmVer) {
-      reasons.push(`Unsupported by ${browser} version: ${firstFeatureVersion}`);
+      reasons.push(
+        `First supported by ${browser} version: ${firstFeatureVersion}, whereas ESM support begins at ${firstEsmVer}`
+      );
     }
   }
   return reasons.length === 0 ? true : reasons;
 }
 
 function getFirstSupportingVersion(supportData, browser) {
-  //const isMdn = featureKey.startsWith("mdn");
   const isMdn = !!supportData.mdn_url;
   console.error(isMdn);
   if (isMdn) {
@@ -79,6 +80,6 @@ function getEsmSupportingBrowsers() {
     ios_saf: 11,
     and_chr: 85,
     and_ff: 79,
-    and_qq: 10.4
+    and_qq: 10.4,
   };
 }
