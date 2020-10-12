@@ -43,6 +43,8 @@ function isFeatureEsm(supportData) {
       reasons.push(
         `First supported by ${browser} version: ${firstFeatureVersion}, whereas ESM support begins at ${firstEsmVer}`
       );
+    } else if (!firstFeatureVersion) {
+      reasons.push(`${browser} has no support.`);
     }
   }
   return reasons.length === 0 ? true : reasons;
