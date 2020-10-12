@@ -11,6 +11,12 @@ export default function(request, response) {
 
   return fetch(LIST_FEATURES_API_URL + search)
     .then(resp => resp.json())
+    .then(resp =>
+      resp
+        .split(",")
+        .filter(s => s.startsWith("mdn"))
+        .join(",")
+    )
     .then(features => fetch(SUPPORT_DATA_API_URL + features))
     .then(resp => resp.json())
     .then(supportData => {
