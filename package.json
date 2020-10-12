@@ -1,0 +1,31 @@
+{
+  "name": "caniesm",
+  "version": "0.1.0",
+  "description": "check to see if a feature is supported in all esm-compatible browsers",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samouri/caniesm.git"
+  },
+  "keywords": [
+    "esm",
+    "browsers",
+    "caniuse"
+  ],
+  "author": "samouri",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/samouri/caniesm/issues"
+  },
+  "homepage": "https://github.com/samouri/caniesm#readme",
+  "devDependencies": {
+    "next": "^9.5.5",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}
