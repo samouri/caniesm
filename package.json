@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/samouri/caniesm#readme",
   "devDependencies": {
-    "next": "^9.5.5",
+    "next": "^10.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }
