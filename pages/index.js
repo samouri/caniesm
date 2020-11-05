@@ -10,7 +10,7 @@ const FORM_BG = "#833502"; // search box area bg
  */
 function HomePage() {
   let [searchQuery, setSearchQuery] = React.useState();
-  if (typeof window !== undefined) {
+  if (typeof(window) !== 'undefined') {
     const startingVal = new URLSearchParams(
       window && window.location.search
     ).get("search");
