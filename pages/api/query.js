@@ -1,22 +1,19 @@
-const LIST_FEATURES_API_URL = "https://caniuse.com/process/query.php?search=";
+const LIST_FEATURES_API_URL = 'https://caniuse.com/process/query.php?search='
 const SUPPORT_DATA_API_URL =
-  "https://caniuse.com/process/get_feat_data.php?type=support-data&feat=";
+  'https://caniuse.com/process/get_feat_data.php?type=support-data&feat='
 
 export default function (request, response) {
-  const { search } = request.query;
+  const { search } = request.query
   if (!search) {
-    response.status(400).send("Error: must supply a search query param.");
-    return;
+    response.status(400).send('Error: must supply a search query param.')
+    return
   }
 
   return fetch(LIST_FEATURES_API_URL + search)
     .then((resp) => resp.json())
-    .then((resp) =>
-      resp
-        .split(",")
-        .filter((s) => s.startsWith("mdn"))
-        .join(",")
-    )
+    .then((resp) => {
+      return resp.featureIds.filter((s) => s.startsWith('mdn')).join(',')
+    })
     .then((features) => fetch(SUPPORT_DATA_API_URL + features))
     .then((resp) => resp.json())
     .then((supportData) => {
@@ -24,58 +21,66 @@ export default function (request, response) {
         Object.values(supportData).map((featureData) => [
           featureData.title,
           isFeatureEsm(featureData),
-        ])
-      );
-      response.status(200).send(JSON.stringify(esmSupportData));
+        ]),
+      )
+      response.status(200).send(JSON.stringify(esmSupportData))
     })
     .catch((err) => {
-      response.status(500).send("Error: " + err.message);
-    });
+      response.status(500).send('Error: ' + err.message)
+    })
 }
 
 /**
  * @param {Object} supportData
  * @returns {true | Array<[string, { esmSupport: string, featureSupport: string } | string]>}
- */ 
+ */
 function isFeatureEsm(supportData) {
-  let reasons = [];
+  let reasons = []
   for (let [browser, firstEsmVer] of Object.entries(
-    getEsmSupportingBrowsers()
+    getEsmSupportingBrowsers(),
   )) {
-    const firstFeatureVersion = getFirstSupportingVersion(supportData, browser);
-    if (firstFeatureVersion > firstEsmVer || ! firstFeatureVersion) {
-      reasons.push([browser, {esmSupport: firstEsmVer, featureSupport: firstFeatureVersion}]
-      );
+    const firstFeatureVersion = getFirstSupportingVersion(supportData, browser)
+    if (firstFeatureVersion > firstEsmVer || !firstFeatureVersion) {
+      reasons.push([
+        browser,
+        {
+          esmSupport: firstEsmVer,
+          featureSupport: firstFeatureVersion,
+        },
+      ])
     }
   }
-  return reasons.length === 0 ? true : reasons;
+  return reasons.length === 0 ? true : reasons
 }
 
 function getFirstSupportingVersion(supportData, browser) {
-  const isMdn = !!supportData.mdn_url;
+  const isMdn = !!supportData.mdn_url
   if (isMdn) {
     if (!supportData.support[browser]) {
-      return false;
+      return false
     }
     if (supportData.title.includes('iterator')) {
-      console.log(supportData.title, `supportData: ${JSON.stringify(supportData.support[browser])}`);
+      console.log(
+        supportData.title,
+        `supportData: ${JSON.stringify(supportData.support[browser])}`,
+      )
     }
-    const browserSupport = supportData.support[browser];
-    let versionAdded = 1;
+    const browserSupport = supportData.support[browser]
+    let versionAdded = 1
     // If array, record the latest version added.
     if (Array.isArray(browserSupport)) {
-      browserSupport.forEach(b => {
+      browserSupport.forEach((b) => {
         let ver = parseFloat(b.version_added)
         if (Number.isFinite(ver)) {
-          versionAdded = Math.min(versionAdded, ver);
+          versionAdded = Math.min(versionAdded, ver)
         }
       })
     } else {
-      versionAdded = parseFloat(supportData.support[browser].version_added);
+      versionAdded = parseFloat(supportData.support[browser].version_added)
     }
-    return versionAdded;
+    return versionAdded
   }
-  return 1;
+  return 1
 }
 
 // Copied from https://caniuse.com/process/get_feat_data.php?type=support-data&feat=es6-module
@@ -99,5 +104,5 @@ function getEsmSupportingBrowsers() {
     ios_saf: 11,
     and_chr: 85,
     and_ff: 79,
-  };
+  }
 }

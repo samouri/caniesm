@@ -74,7 +74,7 @@ function HomePage() {
             </label>
             <input
               id="search-box"
-              autofocus
+              autoFocus
               type="search"
               defaultValue={searchQuery}
               style={{
